@@ -17,8 +17,13 @@ jobs:
         id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ~/.npm  # or ~/.cache/pip for Python, adjust to your dependencies
+          path: ~/.npm  # adjust for your dependencies, e.g., ~/.cache/pip for Python
           key: cache-471bc95
 
       - name: prime-cache-471bc95
-        run: echo "Cache hit? ${{ steps.cache-deps.outputs.cache-hit }}"
+        run: |
+          if [ "${{ steps.cache-deps.outputs.cache-hit }}" == "true" ]; then
+            echo "Cache hit!"
+          else
+            echo "Cache miss!"
+          fi
