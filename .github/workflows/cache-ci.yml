@@ -1,4 +1,3 @@
-
 name: CI with Cache
 
 on:
@@ -18,7 +17,7 @@ jobs:
         id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ~/.npm  # adjust for your dependencies, e.g., ~/.cache/pip for Python
+          path: ~/.cache/pip  # Cache Python dependencies
           key: cache-471bc95
 
       - name: prime-cache-471bc95
@@ -28,3 +27,7 @@ jobs:
           else
             echo "Cache miss!"
           fi
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
