@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  hello-world-job:
+  combined-job:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -15,12 +15,6 @@ jobs:
 
       - name: 21f3001880@ds.study.iitm.ac.in
         run: echo "Hello, world!"
-
-  cache-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
 
       - name: prime-cache-471bc95
         id: prime-cache-471bc95
@@ -31,4 +25,9 @@ jobs:
           restore-keys: cache-471bc95
 
       - name: Print Cache Result
-        run: echo "Cache step result: ${{ steps.prime-cache-471bc95.outcome }}"
+        run: |
+          if [ "${{ steps.prime-cache-471bc95.outputs.cache-hit }}" == "true" ]; then
+            echo "Cache hit!"
+          else
+            echo "Cache miss!"
+          fi
