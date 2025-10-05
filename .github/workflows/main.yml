@@ -1,0 +1,49 @@
+name: Combined CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # First job: simple echo
+  hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 21f3001880@ds.study.iitm.ac.in
+        run: echo "Hello, world!"
+
+  # Second job: cache dependencies
+  cache-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js (or any runtime you need)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache dependencies
+        id: cache-step
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            # add other dependency directories if needed
+          key: cache-471bc95
+
+      - name: Prime cache
+        run: |
+          if [ -n "${{ steps.cache-step.outputs.cache-hit }}" ]; then
+            echo "Cache hit!"
+          else
+            echo "Cache miss!"
+          fi
