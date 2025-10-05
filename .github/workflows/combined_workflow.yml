@@ -23,10 +23,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: prime-cache-471bc95
-        id: prime-cache-471bc95  # <--- this ID is important
+        id: prime-cache-471bc95
         uses: actions/cache@v4
         with:
-          path: ~/.npm   # or your dependency path
+          path: ~/.npm
           key: cache-471bc95
           restore-keys: cache-471bc95
 
