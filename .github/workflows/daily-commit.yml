@@ -1,0 +1,23 @@
+name: Daily Commit Update
+
+on:
+  schedule:
+    # Runs daily at 12:30 PM IST (07:00 UTC)
+    - cron: '0 7 * * *'
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Update README (21f3001880@ds.study.iitm.ac.in)
+        run: |
+          # Update README.md with timestamp
+          echo "Daily update: $(date +'%Y-%m-%d %H:%M:%S')" >> README.md
+          git config --global user.name "DevSync Bot"
+          git config --global user.email "21f3001880@ds.study.iitm.ac.in"
+          git add README.md
+          git commit -m "Automated daily update: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push
