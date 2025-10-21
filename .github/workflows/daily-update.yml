@@ -15,9 +15,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Make a Change
+      - name: Make a Unique Change
         run: |
-          echo "Daily update $(date)" >> daily_update.log
+          # Ensure there is always a change
+          echo "Daily update $(date +'%Y-%m-%d %H:%M:%S')" >> daily_update.log
 
       - name: Configure Git
         run: |
@@ -27,5 +28,5 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git add daily_update.log
-          git commit -m "Daily automated update $(date)" || echo "No changes to commit"
+          git commit -m "Daily automated update $(date +'%Y-%m-%d %H:%M:%S')" || echo "Nothing to commit"
           git push
