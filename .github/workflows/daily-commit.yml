@@ -1,31 +1,38 @@
-name: Daily Scheduled Commit
+name: Daily Auto Commit
 
 on:
   schedule:
-    - cron: "2 14 * * *"   # Runs daily at 7:32 PM IST
-  workflow_dispatch:        # Allow manual run for testing
+    - cron: "30 14 * * *"   # Runs every day at 8:00 PM IST
+  workflow_dispatch:
 
 jobs:
-  daily_commit:
+  auto-commit:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v3
         with:
-          persist-credentials: true   # ✅ Required so push works
+          fetch-depth: 0
 
-      - name: Make small commit (21f3001880@ds.study.iitm.ac.in)
+      - name: Update timestamp file (21f3001880@ds.study.iitm.ac.in)
         run: |
-          echo "Auto update at $(date -u)" > daily-update.txt
+          echo "Last auto update: $(date -u)" >> auto_update_log.txt
 
       - name: Configure Git
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name "GitHub Actions Bot"
           git config user.email "21f3001880@ds.study.iitm.ac.in"
 
-      - name: Commit and Push Changes
+      - name: Pull latest changes (IMPORTANT)
         run: |
-          git add daily-update.txt
-          git commit -m "Daily automated commit at $(date -u)" || echo "No changes to commit"
+          git pull --rebase
+
+      - name: Commit changes
+        run: |
+          git add auto_update_log.txt
+          git commit -m "Automated update at $(date -u)" || echo "No changes to commit"
+
+      - name: Push changes
+        run: |
           git push
