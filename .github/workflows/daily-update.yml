@@ -1,35 +1,33 @@
-name: Daily Repository Update
+    name: Daily Scheduled Commit
 
-on:
-  schedule:
-    - cron: "52 13 * * *"   # 13:30 UTC = 7:00 PM IST
-  workflow_dispatch:
+    on:
+      schedule:
+        # Runs every day at 00:00 UTC
+        - cron: '57 13 * * *'
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
+    jobs:
+      daily_commit:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: true   # ✅ Keep GitHub token for pushing
+          - name: Create or update a file
+            run: |
+              echo "This file was updated on $(date)" > daily-update.txt
 
-      - name: Update timestamp file
-        run: |
-          # ✅ Ensures file content changes every run
-          echo "Last Auto Update: $(date -u)" > last_update.txt
+          - name: Configure Git
+            run: |
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Configure Git User
-        run: |
-          git config user.name "DevSync Bot"
-          git config user.email "21f3001880@ds.study.iitm.ac.in"
+          - name: Add and commit changes
+            run: |
+              git add daily-update.txt
+              git commit -m "Daily automated commit: Update daily-update.txt" || echo "No changes to commit"
 
-      - name: Commit and Push Changes
-        run: |
-          git add last_update.txt
-          if git commit -m "Automated daily update: $(date -u)"; then
-            git push
-          else
-            echo "No changes to commit"
-          fi
+          - name: Push changes
+            uses: ad-m/github-push-action@master
+            with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+              branch: main # Or your default branch name (e.g., master)
