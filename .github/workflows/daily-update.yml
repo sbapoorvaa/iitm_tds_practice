@@ -1,31 +1,35 @@
 name: Daily Repository Update
 
+permissions:
+  contents: write   # REQUIRED to allow pushing
+
 on:
   schedule:
-    - cron: "40 13 * * *"   # Runs daily at 7:10 PM IST
-  workflow_dispatch:
+    - cron: "40 13 * * *"   # 7:10 PM IST (13:40 UTC)
+  workflow_dispatch:        # manual run option
 
 jobs:
   update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: false
+          token: ${{ secrets.GITHUB_TOKEN }}   # ensures push works
 
-      - name: Update timestamp file (includes 21f3001880@ds.study.iitm.ac.in)
+      - name: ALWAYS Update File (includes email 21f3001880@ds.study.iitm.ac.in)
         run: |
-          echo "Last Auto Update: $(date -u)" > last_update.txt
+          echo "Automatically updated at: $(date -u)" > auto_update_log.txt
+          echo "Trigger email: 21f3001880@ds.study.iitm.ac.in" >> auto_update_log.txt
 
-      - name: Configure Git User
+      - name: Configure Git
         run: |
           git config user.name "DevSync Bot"
           git config user.email "21f3001880@ds.study.iitm.ac.in"
 
-      - name: Commit Changes
+      - name: Always Commit and Push
         run: |
-          git add last_update.txt
-          git commit -m "Automated daily update: $(date -u)"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git add auto_update_log.txt
+          git commit -m "Automated update at $(date -u) ✅"
+          git push
