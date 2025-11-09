@@ -1,0 +1,41 @@
+name: Multi-Platform Matrix Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    # Matrix build configuration (3 variants)
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]  # You can use python-version or os too
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: matrix-ad7765f
+        run: echo "Building for Node version ${{ matrix.node-version }}"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate build artifact
+        run: |
+          echo "Build output for Node version ${{ matrix.node-version }}" > build-output-${{ matrix.node-version }}.txt
+          cat build-output-${{ matrix.node-version }}.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-ad7765f-v${{ matrix.node-version }}
+          path: build-output-${{ matrix.node-version }}.txt
