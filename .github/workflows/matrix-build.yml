@@ -7,35 +7,49 @@ on:
 
 jobs:
   build:
-    # Matrix build configuration (3 variants)
+    name: Build for Node v${{ matrix.node-version }} on ${{ matrix.os }} with Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        node-version: [14, 16, 18]  # You can use python-version or os too
-
-    runs-on: ubuntu-latest
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [14, 16, 18]
+        python-version: ['3.9', '3.10', '3.11']
+        # To avoid creating a huge number of jobs (3×3×3=27), limit the combinations if needed:
+        # exclude:
+        #   - os: macos-latest
+        #     node-version: 14
+        #   - os: windows-latest
+        #     node-version: 18
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: matrix-ad7765f
-        run: echo "Building for Node version ${{ matrix.node-version }}"
+        run: |
+          echo "Building for:"
+          echo "OS: ${{ matrix.os }}"
+          echo "Node: ${{ matrix.node-version }}"
+          echo "Python: ${{ matrix.python-version }}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
-        run: npm install
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Generate build artifact
         run: |
-          echo "Build output for Node version ${{ matrix.node-version }}" > build-output-${{ matrix.node-version }}.txt
-          cat build-output-${{ matrix.node-version }}.txt
+          echo "Build output for OS=${{ matrix.os }}, Node=${{ matrix.node-version }}, Python=${{ matrix.python-version }}" > build-output-${{ matrix.os }}-${{ matrix.node-version }}-${{ matrix.python-version }}.txt
+          cat build-output-${{ matrix.os }}-${{ matrix.node-version }}-${{ matrix.python-version }}.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-ad7765f-v${{ matrix.node-version }}
-          path: build-output-${{ matrix.node-version }}.txt
+          name: build-ad7765f-${{ matrix.os }}-node${{ matrix.node-version }}-py${{ matrix.python-version }}
+          path: build-output-${{ matrix.os }}-${{ matrix.node-version }}-${{ matrix.python-version }}.txt
